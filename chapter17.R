@@ -110,3 +110,38 @@ for (i in x) {
   }
   cat("\n")
 }
+
+####
+##1. 
+files <- dir(path = "data/", pattern = "\\.csv$", full.names = TRUE)
+df <- vector("list", length(files))
+for (i in seq_along(files)) {
+  df[[i]] <- readr::read_csv(files[[i]], col_names = FALSE)
+}
+df <- dplyr::bind_rows(df) # strengt tatt skulle vel dette gjøres inne i for-loopen?
+
+##3
+output <- vector("character", ncol(x))
+names(output) <- names(x)
+show_mean <- function(x) {
+  output <- vector("numeric", ncol(x))
+  names(output) <- names(x)
+  for (i in seq_along(x)) {
+    output[[i]] <- mean(x[[i]])
+  }
+}
+show_mean(iris)
+
+show_mean <- function(df, digits = 2) {
+  # Get max length of any variable in the dataset
+  maxstr <- max(stringr::str_length(names(df)))
+  for (nm in names(df)) {
+    if (is.numeric(df[[nm]])) {
+      cat(stringr::str_c(stringr::str_pad(stringr::str_c(nm, ":"), maxstr + 1L, side = "right"),
+                format(mean(df[[nm]]), digits = digits, nsmall = digits),
+                sep = " "),
+          "\n")
+    }
+  }
+}
+show_mean(iris)
